@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="color_primary" format="color"/>
+    <attr name="color_background" format="color"/>
+    <attr name="title_text_color" format="color"/>
+    <attr name="description_text_color" format="color"/>
+</resources>
