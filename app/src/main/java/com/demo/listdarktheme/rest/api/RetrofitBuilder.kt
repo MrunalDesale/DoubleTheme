@@ -1,6 +1,7 @@
 package com.demo.listdarktheme.rest.api
 
 import com.demo.listdarktheme.BuildConfig
+import com.demo.listdarktheme.utils.AppConstants
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import okhttp3.Interceptor
@@ -8,7 +9,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitBuilder {
     private const val BASE_URL = "https://tasty.p.rapidapi.com/"
@@ -19,7 +19,7 @@ object RetrofitBuilder {
             .addHeader("Accept", "application/json")
             .addHeader("Content-Type", "application/json")
             .addHeader("x-rapidapi-host", "tasty.p.rapidapi.com")
-            .addHeader("x-rapidapi-key", "9e80bb28c4msha15f79e9550f72ep154039jsn13ac2be0ace4")
+            .addHeader("x-rapidapi-key", AppConstants.API_KEY)
             .build()
         chain.proceed(request)
     }

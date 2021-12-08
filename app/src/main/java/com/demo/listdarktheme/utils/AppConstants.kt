@@ -4,5 +4,6 @@ class AppConstants {
     companion object {
         const val LIGHT_THEME = "LightTheme"
         const val DARK_THEME = "DarkTheme"
+        const val API_KEY = "Your key"
     }
 }

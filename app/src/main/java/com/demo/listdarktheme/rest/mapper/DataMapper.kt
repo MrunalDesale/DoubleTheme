@@ -11,6 +11,7 @@ class DataMapper {
             if (it.credits.isNotEmpty())
                 model.credit_name = it.credits[0].name
             model.name = it.name
+            model.id= it.id
             model.thumbnail_url = it.thumbnail_url
             recipeModel.add(model)
         }
