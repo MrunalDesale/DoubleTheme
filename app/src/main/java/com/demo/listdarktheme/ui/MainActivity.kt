@@ -5,21 +5,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.widget.SwitchCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.listdarktheme.R
-import com.demo.listdarktheme.rest.model.Recipe
+import com.demo.listdarktheme.application.ThemeApplication
 import com.demo.listdarktheme.ui.model.RecipeModel
 import com.demo.listdarktheme.ui.viewmodel.MainViewModel
 import com.demo.listdarktheme.utils.AppConstants
 import com.demo.listdarktheme.utils.SharedPrefUtils
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mAdapter: FoodAdapter
-    private lateinit var mainViewModel: MainViewModel
 
+        private val mainViewModel: MainViewModel by viewModels {
+            MainViewModel.MainViewModelFactory(application,ThemeApplication.repository)
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (SharedPrefUtils.getThemeType() == AppConstants.DARK_THEME)
@@ -31,9 +35,9 @@ class MainActivity : AppCompatActivity() {
         setViewModel()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        val menuItem = menu?.findItem(R.id.item_theme)
+        val menuItem = menu.findItem(R.id.item_theme)
         menuItem?.setActionView(R.layout.layout_toggle_item)
         val switch = menuItem?.actionView?.findViewById<SwitchCompat>(R.id.switch_theme)
         switch?.isChecked = SharedPrefUtils.getThemeType() == AppConstants.DARK_THEME
@@ -60,11 +64,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setViewModel() {
-        mainViewModel = ViewModelProvider(this)[MainViewModel(application)::class.java]
         mainViewModel.getRecipesList().observe(this, {
             progress_bar.visibility = View.GONE
             if (it != null && it.isNotEmpty()) {
                 mAdapter.updateList(it as ArrayList<RecipeModel>)
+                lifecycleScope.launch {
+                    it.forEach { recipeMode ->
+                        mainViewModel.insertRecipe(recipeMode)
+                    }
+                }
             }
         })
         progress_bar.visibility = View.VISIBLE
