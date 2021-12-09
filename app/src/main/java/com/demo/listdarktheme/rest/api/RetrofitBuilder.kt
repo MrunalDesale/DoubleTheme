@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitBuilder {
     private const val BASE_URL = "https://tasty.p.rapidapi.com/"
@@ -40,7 +41,7 @@ object RetrofitBuilder {
         return OkHttpClient().newBuilder().addInterceptor(logging).addInterceptor(interceptor)
             .addInterceptor(
                 OkHttpProfilerInterceptor()
-            )
+            ).readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS)
             .build()
     }
 

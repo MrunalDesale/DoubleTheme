@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.demo.listdarktheme.R
 import com.demo.listdarktheme.application.ThemeApplication
+import com.demo.listdarktheme.rest.utils.NetworkUtils
 import com.demo.listdarktheme.ui.model.RecipeModel
 import com.demo.listdarktheme.ui.viewmodel.MainViewModel
 import com.demo.listdarktheme.utils.AppConstants
@@ -21,9 +23,10 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var mAdapter: FoodAdapter
 
-        private val mainViewModel: MainViewModel by viewModels {
-            MainViewModel.MainViewModelFactory(application,ThemeApplication.repository)
-        }
+    private val mainViewModel: MainViewModel by viewModels {
+        MainViewModel.MainViewModelFactory(application, ThemeApplication.repository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (SharedPrefUtils.getThemeType() == AppConstants.DARK_THEME)
@@ -75,7 +78,13 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        progress_bar.visibility = View.VISIBLE
-        mainViewModel.getRecipes(0, 10)
+        mainViewModel.getError().observe(this, {
+            Toast.makeText(this, it.errorMessage, Toast.LENGTH_SHORT).show()
+        })
+        if (NetworkUtils.isInternetAvailable(this)) {
+            progress_bar.visibility = View.VISIBLE
+            mainViewModel.getRecipes(0, 10)
+        } else
+            Toast.makeText(this, "No internet available", Toast.LENGTH_SHORT).show()
     }
 }
