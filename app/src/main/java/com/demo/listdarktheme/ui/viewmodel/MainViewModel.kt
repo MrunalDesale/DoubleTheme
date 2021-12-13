@@ -33,7 +33,9 @@ open class MainViewModel(application: Application, private val recipeRepository:
     fun getRecipesList() = mRecipesResult
     fun getError() = mError
 
-    val recipeModelList: LiveData<List<RecipeModel?>?> = recipeRepository.recipeList.asLiveData()
+    suspend fun getRecipes() :List<RecipeModel?>? {
+        return recipeRepository.getRecipes()
+    }
 
     suspend fun insertRecipe(recipeModel: RecipeModel) = viewModelScope.launch {
         recipeRepository.insertRecipe(recipeModel)

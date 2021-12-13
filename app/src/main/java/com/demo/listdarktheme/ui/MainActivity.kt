@@ -17,6 +17,7 @@ import com.demo.listdarktheme.ui.model.RecipeModel
 import com.demo.listdarktheme.ui.viewmodel.MainViewModel
 import com.demo.listdarktheme.utils.AppConstants
 import com.demo.listdarktheme.utils.SharedPrefUtils
+import com.demo.listdarktheme.utils.showToast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.launch
 
@@ -85,7 +86,12 @@ class MainActivity : AppCompatActivity() {
         if (NetworkUtils.isInternetAvailable(this)) {
             progress_bar.visibility = View.VISIBLE
             mainViewModel.getRecipes(0, 10)
-        } else
-            Toast.makeText(this, "No internet available", Toast.LENGTH_SHORT).show()
+        } else {
+            showToast("No internet available. Fetching data from database..")
+            lifecycleScope.launch {
+                if (mainViewModel.getRecipes()?.size ?: 0 > 0)
+                    mAdapter.updateList(mainViewModel.getRecipes() as ArrayList<RecipeModel>)
+            }
+        }
     }
 }

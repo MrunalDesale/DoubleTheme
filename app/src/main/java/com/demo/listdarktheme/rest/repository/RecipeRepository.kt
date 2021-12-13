@@ -8,11 +8,12 @@ import com.demo.listdarktheme.rest.mapper.DataMapper
 import com.demo.listdarktheme.rest.model.ResultWrapper
 import com.demo.listdarktheme.rest.utils.NetworkUtils
 import com.demo.listdarktheme.ui.model.RecipeModel
-import kotlinx.coroutines.flow.Flow
 
 class RecipeRepository(private val dao: RecipeDao) {
 
-    val recipeList: Flow<List<RecipeModel?>?> = dao.getAllRecipe()
+    suspend fun getRecipes(): List<RecipeModel?>? {
+        return dao.getAllRecipe()
+    }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
