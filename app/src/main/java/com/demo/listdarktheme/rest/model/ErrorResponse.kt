@@ -1,3 +1,6 @@
 package com.demo.listdarktheme.rest.model
 
-data class ErrorResponse(var errorMessage: String)
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
+data class ErrorResponse(var message: String? = "")
