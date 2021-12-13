@@ -79,7 +79,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
         mainViewModel.getError().observe(this, {
-            Toast.makeText(this, it.errorMessage, Toast.LENGTH_SHORT).show()
+            progress_bar.visibility = View.GONE
+            Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
         })
         if (NetworkUtils.isInternetAvailable(this)) {
             progress_bar.visibility = View.VISIBLE

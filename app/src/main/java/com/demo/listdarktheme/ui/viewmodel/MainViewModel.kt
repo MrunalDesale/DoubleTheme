@@ -16,10 +16,7 @@ open class MainViewModel(application: Application, private val recipeRepository:
     private val mError: MutableLiveData<ErrorResponse> = MutableLiveData()
 
     fun getRecipes(pageNo: Int, size: Int) = viewModelScope.launch {
-        val recipeList = NetworkUtils.makeApiCall {
-            recipeRepository.getApiResponse(pageNo, size)
-        }
-        when (recipeList) {
+        when (val recipeList = recipeRepository.getApiResponse(pageNo, size)) {
             is ResultWrapper.NetworkError -> {
                 mError.postValue(ErrorResponse("Network error"))
             }

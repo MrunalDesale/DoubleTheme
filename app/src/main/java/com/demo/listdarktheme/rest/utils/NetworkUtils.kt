@@ -5,10 +5,10 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import com.demo.listdarktheme.rest.model.ErrorResponse
 import com.demo.listdarktheme.rest.model.ResultWrapper
-import com.squareup.moshi.Moshi
+import com.google.gson.Gson
+import com.google.gson.TypeAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -23,6 +23,7 @@ class NetworkUtils {
                 val myObject = withContext(Dispatchers.IO) { callFunction.invoke() }
                 ResultWrapper.Success(myObject)
             } catch (throwable: Throwable) {
+                var data = ResultWrapper.GenericError()
                 withContext(Dispatchers.Main) {
                     throwable.printStackTrace()
                     Log.e(
@@ -34,24 +35,29 @@ class NetworkUtils {
                         is IOException -> ResultWrapper.NetworkError
                         is HttpException -> {
                             val code = throwable.code()
-                            val errorResponse = convertErrorBody(throwable)
-                            ResultWrapper.GenericError(code, errorResponse)
+                            val errorResponse = convertErrorBody(throwable.response()?.errorBody()?.string()?:"")
+                            data = ResultWrapper.GenericError(code, errorResponse)
                         }
                         else -> {
-                            ResultWrapper.GenericError(null, null)
+                            data = ResultWrapper.GenericError(null, null)
                         }
                     }
                 }
-                null
+                data
             }
         }
 
-        fun convertErrorBody(throwable: HttpException): ErrorResponse? {
+        fun convertErrorBody(throwable: String): ErrorResponse? {
             return try {
-                throwable.response()?.errorBody()?.source()?.let {
-                    val moshiAdapter = Moshi.Builder().build().adapter(ErrorResponse::class.java)
-                    moshiAdapter.fromJson(it)
+                val gson = Gson()
+                var error: ErrorResponse
+                val adapter: TypeAdapter<ErrorResponse> = gson.getAdapter(ErrorResponse::class.java)
+                try {
+                    error = adapter.fromJson(throwable)
+                } catch (e: IOException) {
+                    error = ErrorResponse()
                 }
+                return error
             } catch (exception: Exception) {
                 null
             }

@@ -73,6 +73,7 @@ dependencies {
     // Moshi adapter
     def moshiVersion = "1.9.1"
     implementation "com.squareup.moshi:moshi:$moshiVersion"
+//    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
     // Ok http profiler tool
     implementation 'com.localebro:okhttpprofiler:1.0.8'
