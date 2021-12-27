@@ -8,8 +8,14 @@ import com.demo.listdarktheme.rest.mapper.DataMapper
 import com.demo.listdarktheme.rest.model.ResultWrapper
 import com.demo.listdarktheme.rest.utils.NetworkUtils
 import com.demo.listdarktheme.ui.model.RecipeModel
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import javax.inject.Inject
 
-class RecipeRepository(private val dao: RecipeDao) {
+@Module
+@InstallIn(ViewModelComponent::class)
+class RecipeRepository @Inject constructor(private val dao: RecipeDao) {
 
     suspend fun getRecipes(): List<RecipeModel?>? {
         return dao.getAllRecipe()

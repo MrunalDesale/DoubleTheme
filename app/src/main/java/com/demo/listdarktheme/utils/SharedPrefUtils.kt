@@ -1,23 +1,17 @@
 package com.demo.listdarktheme.utils
 
-import android.content.SharedPreferences
-import com.demo.listdarktheme.application.ThemeApplication
+import android.content.Context
 
-class SharedPrefUtils {
-    companion object {
-        private const val prefName: String = "ThemePreference"
-        private var sharedPref = ThemeApplication.appContext.getSharedPreferences(prefName, 0)
-        private const val themeType = "ThemeType"
-        private lateinit var editor: SharedPreferences.Editor
+private const val prefName: String = "ThemePreference"
+private const val themeType = "ThemeType"
 
-        fun getThemeType(): String? {
-            return sharedPref.getString(themeType, null)
-        }
+fun getThemeType(appContext: Context): String? {
+    val sharedPref = appContext.getSharedPreferences(prefName, 0)
+    return sharedPref.getString(themeType, null)
+}
 
-        fun setThemeType(deviceId: String) {
-            editor = sharedPref.edit()
-            editor.putString(themeType, deviceId)
-            editor.apply()
-        }
-    }
+fun setThemeType(appContext: Context, deviceId: String) {
+    appContext.getSharedPreferences(prefName, 0).edit().apply {
+        putString(themeType, deviceId)
+    }.apply()
 }

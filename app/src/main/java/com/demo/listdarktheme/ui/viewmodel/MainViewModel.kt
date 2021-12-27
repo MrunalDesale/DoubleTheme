@@ -1,16 +1,22 @@
 package com.demo.listdarktheme.ui.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.*
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.demo.listdarktheme.rest.model.ErrorResponse
 import com.demo.listdarktheme.rest.model.ResultWrapper
 import com.demo.listdarktheme.rest.repository.RecipeRepository
-import com.demo.listdarktheme.rest.utils.NetworkUtils
 import com.demo.listdarktheme.ui.model.RecipeModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-open class MainViewModel(application: Application, private val recipeRepository: RecipeRepository) :
+@HiltViewModel
+open class MainViewModel @Inject constructor(
+    application: Application,
+    private val recipeRepository: RecipeRepository
+) :
     AndroidViewModel(application) {
     private val mRecipesResult: MutableLiveData<List<RecipeModel>?> = MutableLiveData()
     private val mError: MutableLiveData<ErrorResponse> = MutableLiveData()
@@ -21,7 +27,9 @@ open class MainViewModel(application: Application, private val recipeRepository:
                 mError.postValue(ErrorResponse("Network error"))
             }
             is ResultWrapper.GenericError -> {
-                mError.postValue(recipeList.error ?: ErrorResponse("Something went wrong. Please try again."))
+                mError.postValue(
+                    recipeList.error ?: ErrorResponse("Something went wrong. Please try again.")
+                )
             }
 
             is ResultWrapper.Success -> {
@@ -33,24 +41,11 @@ open class MainViewModel(application: Application, private val recipeRepository:
     fun getRecipesList() = mRecipesResult
     fun getError() = mError
 
-    suspend fun getRecipes() :List<RecipeModel?>? {
+    suspend fun getRecipes(): List<RecipeModel?>? {
         return recipeRepository.getRecipes()
     }
 
     suspend fun insertRecipe(recipeModel: RecipeModel) = viewModelScope.launch {
         recipeRepository.insertRecipe(recipeModel)
-    }
-
-    class MainViewModelFactory(
-        private val application: Application,
-        private val repository: RecipeRepository
-    ) : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST")
-                return MainViewModel(application, repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
     }
 }
